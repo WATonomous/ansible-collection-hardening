@@ -84,6 +84,24 @@
     - ssh_pam_support | bool
     - not (ssh_print_pam_motd | bool)
 
+- name: Create MOTD configuration
+  pamd:
+    name: sshd
+    type: session
+    control: optional
+    module_path: pam_mail.so
+    new_type: session
+    new_control: optional
+    new_module_path: pam_motd.so
+    module_arguments:
+      - motd=/run/motd.dynamic
+    state: before
+    backup: true
+  when:
+    - ssh_server_hardening | bool
+    - ssh_pam_support | bool
+    - ssh_print_pam_motd | bool
+
 - name: Create ssh_config and set permissions to root/644
   template:
     src: 'openssh.conf.j2'
